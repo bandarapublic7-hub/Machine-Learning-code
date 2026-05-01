@@ -1,0 +1,1334 @@
+```
+
+
+
+
+
+```
+
+X,y = make_regression(n_samples=100, n_features=1, n_informative=1, n_targets=1,noise=20,random_state=13)
+
+
+
+```
+
+
+
+
+
+```
+
+plt.scatter(X,y)
+
+
+
+```
+
+
+
+
+
+```
+
+<matplotlib.collections.PathCollection at 0x27ce2327fa0>
+
+```
+
+
+
+
+
+```
+
+m_arr = np.linspace(-150, 150, 10)
+
+b_arr = np.linspace(-150, 150, 10)
+
+mGrid, bGrid = np.meshgrid(m_arr,b_arr)
+
+
+
+final = np.vstack((mGrid.ravel().reshape(1,100),bGrid.ravel().reshape(1,100))).T
+
+
+
+z_arr = []
+
+
+
+for i in range(final.shape[0]):
+
+    z_arr.append(np.sum((y - final[i,0]*X.reshape(100) - final[i,1])**2))
+
+
+
+z_arr = np.array(z_arr).reshape(10,10)
+
+
+
+```
+
+
+
+
+
+```
+
+ 
+
+
+
+```
+
+
+
+
+
+```
+
+ 
+
+
+
+```
+
+
+
+
+
+```
+
+import plotly.graph_objects as go
+
+
+
+fig = go.Figure(data=[go.Surface(x = m_arr, y = b_arr, z =z_arr)])
+
+
+
+fig.update_layout(title='Cost Function', autosize=False,
+
+                  width=500, height=500,
+
+                  margin=dict(l=65, r=50, b=65, t=90))
+
+
+
+
+
+
+
+fig.show()
+
+
+
+fig.write_html("cost_function.html")
+
+
+
+```
+
+
+
+
+
+```
+
+b = 150
+
+m = -127.82
+
+lr = 0.001
+
+all_b = []
+
+all_m = []
+
+all_cost = []
+
+
+
+epochs = 30
+
+
+
+for i in range(epochs):
+
+    slope_b = 0
+
+    slope_m = 0
+
+    cost = 0
+
+    for j in range(X.shape[0]):
+
+        slope_b = slope_b - 2*(y[j] - (m * X[j]) -  b)
+
+        slope_m = slope_m - 2*(y[j] - (m * X[j]) -  b)*X[j]
+
+        cost = cost + (y[j] - m * X[j] -b) ** 2
+
+
+
+    b = b - (lr * slope_b)
+
+    m = m - (lr * slope_m)
+
+    all_b.append(b)
+
+    all_m.append(m)
+
+    all_cost.append(cost)
+
+
+
+```
+
+
+
+
+
+```
+
+import plotly.express as px
+
+
+
+fig = px.scatter_3d(x=np.array(all_m).ravel(), y=np.array(all_b).ravel(), z=np.array(all_cost).ravel()*100)
+
+
+
+fig.add_trace(go.Surface(x = m_arr, y = b_arr, z =z_arr*100 ))
+
+
+
+fig.show()
+
+
+
+fig.write_html("cost_function2.html")
+
+
+
+```
+
+
+
+
+
+```
+
+import plotly.graph_objects as go
+
+
+
+fig = go.Figure(go.Scatter(x=np.array(all_m).ravel(), y=np.array(all_b).ravel(), name='High 2014',
+
+                         line=dict(color='#fff', width=4)))
+
+
+
+fig.add_trace(go.Contour(z=z_arr,x=m_arr,y=b_arr))
+
+fig.show()
+
+
+
+```
+
+
+
+
+
+```
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+
+
+
+
+fig,ax=plt.subplots(1,1)
+
+plt.figure(figsize=(18,4))
+
+cp = ax.contourf(m_arr, b_arr, z_arr)
+
+ax.plot(np.array(all_m).ravel(),np.array(all_b).ravel(),color='white')
+
+fig.colorbar(cp) # Add a colorbar to a plot
+
+ax.set_title('Filled Contours Plot')
+
+ax.set_xlabel('m')
+
+ax.set_ylabel('b')
+
+plt.show()
+
+
+
+```
+
+
+
+
+
+```
+
+<Figure size 1296x288 with 0 Axes>
+
+```
+
+
+
+
+
+```
+
+%matplotlib notebook
+
+from matplotlib.animation import FuncAnimation
+
+import matplotlib.animation as animation
+
+
+
+# intercept graph
+
+num_epochs = list(range(0,30))
+
+fig = plt.figure(figsize=(9,5)) 
+
+axis = plt.axes(xlim =(-150, 150), ylim =(-150, 150)) 
+
+
+
+axis.contourf(m_arr, b_arr, z_arr)
+
+
+
+line, = axis.plot([], [], lw = 2,color='white') 
+
+  
+
+xdata, ydata = [], [] 
+
+  
+
+# animation function 
+
+def animate(i): 
+
+    label = 'epoch {0}'.format(i + 1)
+
+    xdata.append(all_m[i]) 
+
+    ydata.append(all_b[i]) 
+
+    line.set_data(xdata, ydata) 
+
+    axis.set_xlabel(label)
+
+      
+
+    return line, 
+
+  
+
+# calling the animation function     
+
+anim = animation.FuncAnimation(fig, animate, frames = 30,repeat=False, interval = 500)
+
+
+
+#f = r"animation8.gif" 
+
+#writergif = animation.PillowWriter(fps=2) 
+
+#anim.save(f, writer=writergif)
+
+
+
+```
+
+
+
+
+
+```
+
+ 
+
+from sklearn.datasets import make_regression
+
+
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+%matplotlib notebook
+
+from matplotlib.animation import FuncAnimation
+
+import matplotlib.animation as animation
+
+X,y = make_regression(n_samples=100, n_features=1, n_informative=1, n_targets=1,noise=20,random_state=13)
+
+plt.scatter(X,y)
+
+
+
+<matplotlib.collections.PathCollection at 0x2284a66ed60>
+
+b = -520
+
+m = 600
+
+lr = 0.001
+
+all_b = []
+
+all_m = []
+
+all_cost = []
+
+
+
+epochs = 30
+
+
+
+for i in range(epochs):
+
+    slope_b = 0
+
+    slope_m = 0
+
+    cost = 0
+
+    for j in range(X.shape[0]):
+
+        slope_b = slope_b - 2*(y[j] - (m * X[j]) -  b)
+
+        slope_m = slope_m - 2*(y[j] - (m * X[j]) -  b)*X[j]
+
+        cost = cost + (y[j] - m * X[j] -b) ** 2
+
+
+
+    b = b - (lr * slope_b)
+
+    m = m - (lr * slope_m)
+
+    all_b.append(b)
+
+    all_m.append(m)
+
+    all_cost.append(cost)
+
+fig, ax = plt.subplots(figsize=(9,5))
+
+#fig.set_tight_layout(True)
+
+
+
+x_i = np.arange(-3, 3, 0.1)
+
+y_i = x_i*(-27) -150
+
+ax.scatter(X, y)
+
+line, = ax.plot(x_i, x_i*50 - 4, 'r-', linewidth=2)
+
+
+
+def update(i):
+
+    label = 'epoch {0}'.format(i + 1)
+
+    line.set_ydata(x_i*all_m[i] + all_b[i])
+
+    ax.set_xlabel(label)
+
+    # return line, ax
+
+
+
+anim = FuncAnimation(fig, update, repeat=True, frames=epochs, interval=500)
+
+
+
+#f = r"animation4.gif" 
+
+#writergif = animation.PillowWriter(fps=2) 
+
+#anim.save(f, writer=writergif)
+
+
+
+# Cost function
+
+# creating a blank window 
+
+# for the animation 
+
+num_epochs = list(range(0,30))
+
+fig = plt.figure(figsize=(9,5)) 
+
+axis = plt.axes(xlim =(0, 31), ylim =(0, 4500000)) 
+
+  
+
+line, = axis.plot([], [], lw = 2) 
+
+  
+
+xdata, ydata = [], [] 
+
+  
+
+# animation function 
+
+def animate(i): 
+
+    label = 'epoch {0}'.format(i + 1)
+
+    xdata.append(num_epochs[i]) 
+
+    ydata.append(all_cost[i]) 
+
+    line.set_data(xdata, ydata) 
+
+    axis.set_xlabel(label)
+
+      
+
+    return line, 
+
+  
+
+# calling the animation function     
+
+anim = animation.FuncAnimation(fig, animate, frames = 30,repeat=False, interval = 500)
+
+
+
+f = r"animation5.gif" 
+
+writergif = animation.PillowWriter(fps=2) 
+
+anim.save(f, writer=writergif)
+
+
+
+# intercept graph
+
+num_epochs = list(range(0,30))
+
+fig = plt.figure(figsize=(9,5)) 
+
+axis = plt.axes(xlim =(0, 31), ylim =(-10, 160)) 
+
+  
+
+line, = axis.plot([], [], lw = 2) 
+
+  
+
+xdata, ydata = [], [] 
+
+  
+
+# animation function 
+
+def animate(i): 
+
+    label = 'epoch {0}'.format(i + 1)
+
+    xdata.append(num_epochs[i]) 
+
+    ydata.append(all_b[i]) 
+
+    line.set_data(xdata, ydata) 
+
+    axis.set_xlabel(label)
+
+      
+
+    return line, 
+
+  
+
+# calling the animation function     
+
+anim = animation.FuncAnimation(fig, animate, frames = 30,repeat=False, interval = 500)
+
+
+
+f = r"animation6.gif" 
+
+writergif = animation.PillowWriter(fps=2) 
+
+anim.save(f, writer=writergif)
+
+
+
+# intercept graph
+
+num_epochs = list(range(0,30))
+
+fig = plt.figure(figsize=(9,5)) 
+
+axis = plt.axes(xlim =(0, 31), ylim =(-150, 50)) 
+
+  
+
+line, = axis.plot([], [], lw = 2) 
+
+  
+
+xdata, ydata = [], [] 
+
+  
+
+# animation function 
+
+def animate(i): 
+
+    label = 'epoch {0}'.format(i + 1)
+
+    xdata.append(num_epochs[i]) 
+
+    ydata.append(all_m[i]) 
+
+    line.set_data(xdata, ydata) 
+
+    axis.set_xlabel(label)
+
+      
+
+    return line, 
+
+  
+
+# calling the animation function     
+
+anim = animation.FuncAnimation(fig, animate, frames = 30,repeat=False, interval = 500)
+
+
+
+f = r"animation7.gif" 
+
+writergif = animation.PillowWriter(fps=2) 
+
+anim.save(f, writer=writergif)
+
+from sklearn.datasets import make_regression
+
+import matplotlib.pyplot as plt
+
+import numpy as np
+
+from sklearn.model_selection import cross_val_score
+
+X,y = make_regression(n_samples=100, n_features=1, n_informative=1, n_targets=1,noise=20,random_state=13)
+
+plt.scatter(X,y)
+
+<matplotlib.collections.PathCollection at 0x2b141c398e0>
+
+
+
+from sklearn.model_selection import train_test_split
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=2)
+
+from sklearn.linear_model import LinearRegression
+
+lr = LinearRegression()
+
+lr.fit(X_train,y_train)
+
+print(lr.coef_)
+
+print(lr.intercept_)
+
+[28.12597332]
+
+-2.271014426178382
+
+y_pred = lr.predict(X_test)
+
+from sklearn.metrics import r2_score
+
+r2_score(y_test,y_pred)
+
+0.6345158782661013
+
+class GDRegressor:
+
+    
+
+    def __init__(self,learning_rate,epochs):
+
+        self.m = 100
+
+        self.b = -120
+
+        self.lr = learning_rate
+
+        self.epochs = epochs
+
+        
+
+    def fit(self,X,y):
+
+        # calcualte the b using GD
+
+        for i in range(self.epochs):
+
+            loss_slope_b = -2 * np.sum(y - self.m*X.ravel() - self.b)
+
+            loss_slope_m = -2 * np.sum((y - self.m*X.ravel() - self.b)*X.ravel())
+
+            
+
+            self.b = self.b - (self.lr * loss_slope_b)
+
+            self.m = self.m - (self.lr * loss_slope_m)
+
+        print(self.m,self.b)
+
+        
+
+    def predict(self,X):
+
+        return self.m * X + self.b
+
+    
+
+gd = GDRegressor(0.001,50)
+
+gd.fit(X_train,y_train)
+
+28.159367347119066 -2.3004574196824854
+
+y_pred = gd.predict(X_test)
+
+from sklearn.metrics import r2_score
+
+r2_score(y_test,y_pred)
+
+0.6343842836315579
+
+ 
+
+
+
+from sklearn.datasets import make_regression
+
+import numpy as np
+
+     
+
+
+
+X,y = make_regression(n_samples=4, n_features=1, n_informative=1, n_targets=1,noise=80,random_state=13)
+
+     
+
+
+
+import matplotlib.pyplot as plt
+
+plt.scatter(X,y)
+
+     
+
+<matplotlib.collections.PathCollection at 0x7fc9eff29e90>
+
+
+
+
+
+# Lets apply OLS
+
+from sklearn.linear_model import LinearRegression
+
+     
+
+
+
+reg = LinearRegression()
+
+reg.fit(X,y)
+
+     
+
+LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None, normalize=False)
+
+
+
+reg.coef_
+
+     
+
+array([78.35063668])
+
+
+
+reg.intercept_
+
+     
+
+26.15963284313262
+
+
+
+plt.scatter(X,y)
+
+plt.plot(X,reg.predict(X),color='red')
+
+     
+
+[<matplotlib.lines.Line2D at 0x7fc9f049e1d0>]
+
+
+
+
+
+# Lets apply Gradient Descent assuming slope is constant m = 78.35
+
+# and let's assume the starting value for intercept b = 0
+
+y_pred = ((78.35 * X) + 100).reshape(4)
+
+     
+
+
+
+plt.scatter(X,y)
+
+plt.plot(X,reg.predict(X),color='red',label='OLS')
+
+plt.plot(X,y_pred,color='#00a65a',label='b = 0')
+
+plt.legend()
+
+plt.show()
+
+     
+
+
+
+
+
+m = 78.35
+
+b = 100
+
+
+
+loss_slope = -2 * np.sum(y - m*X.ravel() - b)
+
+loss_slope
+
+     
+
+590.7223659179078
+
+
+
+# Lets take learning rate = 0.1
+
+lr = 0.1
+
+
+
+step_size = loss_slope*lr
+
+step_size
+
+     
+
+59.072236591790784
+
+
+
+# Calculating the new intercept
+
+b = b - step_size
+
+b
+
+     
+
+40.927763408209216
+
+
+
+y_pred1 = ((78.35 * X) + b).reshape(4)
+
+
+
+plt.scatter(X,y)
+
+plt.plot(X,reg.predict(X),color='red',label='OLS')
+
+plt.plot(X,y_pred1,color='#00a65a',label='b = {}'.format(b))
+
+plt.plot(X,y_pred,color='#A3E4D7',label='b = 0')
+
+plt.legend()
+
+plt.show()
+
+     
+
+
+
+
+
+# Iteration 2
+
+loss_slope = -2 * np.sum(y - m*X.ravel() - b)
+
+loss_slope
+
+     
+
+118.14447318358157
+
+
+
+step_size = loss_slope*lr
+
+step_size
+
+     
+
+11.814447318358157
+
+
+
+b = b - step_size
+
+b
+
+     
+
+29.11331608985106
+
+
+
+y_pred2 = ((78.35 * X) + b).reshape(4)
+
+
+
+plt.scatter(X,y)
+
+plt.plot(X,reg.predict(X),color='red',label='OLS')
+
+plt.plot(X,y_pred2,color='#00a65a',label='b = {}'.format(b))
+
+plt.plot(X,y_pred1,color='#A3E4D7',label='b = {}'.format(b))
+
+plt.plot(X,y_pred,color='#A3E4D7',label='b = 0')
+
+plt.legend()
+
+plt.show()
+
+     
+
+
+
+
+
+# Iteration 3
+
+loss_slope = -2 * np.sum(y - m*X.ravel() - b)
+
+loss_slope
+
+     
+
+23.62889463671634
+
+
+
+step_size = loss_slope*lr
+
+step_size
+
+     
+
+2.362889463671634
+
+
+
+b = b - step_size
+
+b
+
+     
+
+26.750426626179426
+
+
+
+y_pred3 = ((78.35 * X) + b).reshape(4)
+
+
+
+plt.figure(figsize=(15,15))
+
+plt.scatter(X,y)
+
+plt.plot(X,reg.predict(X),color='red',label='OLS')
+
+plt.plot(X,y_pred3,color='#00a65a',label='b = {}'.format(b))
+
+plt.plot(X,y_pred2,color='#A3E4D7',label='b = {}'.format(b))
+
+plt.plot(X,y_pred1,color='#A3E4D7',label='b = {}'.format(b))
+
+plt.plot(X,y_pred,color='#A3E4D7',label='b = 0')
+
+plt.legend()
+
+plt.show()
+
+     
+
+
+
+
+
+b = -100
+
+m = 78.35
+
+lr = 0.01
+
+
+
+epochs = 100
+
+
+
+for i in range(epochs):
+
+  loss_slope = -2 * np.sum(y - m*X.ravel() - b)
+
+  b = b - (lr * loss_slope)
+
+
+
+  y_pred = m * X + b
+
+
+
+  plt.plot(X,y_pred)
+
+
+
+plt.scatter(X,y)
+
+     
+
+<matplotlib.collections.PathCollection at 0x7fc9ef7c41d0>
+
+
+
+
+
+
+from sklearn.datasets import make_regression
+
+%matplotlib notebook
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
+X,y = make_regression(n_samples=100, n_features=1, n_informative=1, n_targets=1,noise=20,random_state=13)
+plt.scatter(X,y)
+
+<matplotlib.collections.PathCollection at 0x14e59c8a190>
+from sklearn.linear_model import LinearRegression
+reg = LinearRegression()
+reg.fit(X,y)
+print(reg.coef_)
+print(reg.intercept_)
+[27.82809103]
+-2.29474455867698
+b = -150
+m = 27.82
+lr = 0.001
+all_b = []
+all_cost = []
+
+epochs = 30
+
+for i in range(epochs):
+    slope = 0
+    cost = 0
+    for j in range(X.shape[0]):
+        slope = slope - 2*(y[j] - (m * X[j]) -  b)
+        cost = cost + (y[j] - m * X[j] -b) ** 2
+
+    b = b - (lr * slope)
+    all_b.append(b)
+    all_cost.append(cost)
+    y_pred = m * X + b
+    plt.plot(X,y_pred)
+plt.scatter(X,y)
+<matplotlib.collections.PathCollection at 0x14e59cb1730>
+all_b = np.array(all_b).ravel()
+all_b
+array([-120.4588544 ,  -96.82593791,  -77.91960473,  -62.79453818,
+        -50.69448494,  -41.01444235,  -33.27040827,  -27.07518102,
+        -22.11899921,  -18.15405376,  -14.98209741,  -12.44453232,
+        -10.41448025,   -8.7904386 ,   -7.49120528,   -6.45181862,
+         -5.62030929,   -4.95510183,   -4.42293586,   -3.99720308,
+         -3.65661686,   -3.38414789,   -3.16617271,   -2.99179256,
+         -2.85228845,   -2.74068515,   -2.65140252,   -2.57997641,
+         -2.52283553,   -2.47712282])
+all_cost = np.array(all_cost).ravel()
+all_cost
+array([2210040.49020261, 1424629.13499295,  921965.86765877,
+        600261.37656489,  394370.50226481,  262600.34271276,
+        178267.44059944,  124294.38324692,   89751.62654131,
+         67644.26224972,   53495.5491031 ,   44440.37268926,
+         38645.05978441,   34936.0595253 ,   32562.29935947,
+         31043.09285334,   30070.80068942,   29448.5337045 ,
+         29050.28283416,   28795.40227714,   28632.27872065,
+         28527.87964449,   28461.06423575,   28418.30237416,
+         28390.93478274,   28373.41952423,   28362.20975879,
+         28355.0355089 ,   28350.44398898,   28347.50541622])
+num_epochs = list(range(1,31)) len(num_epochs)
+
+fig, ax = plt.subplots(figsize=(9,5))
+#fig.set_tight_layout(True)
+
+x_i = np.arange(-3, 3, 0.1)
+y_i = x_i*m -150
+ax.scatter(X, y)
+line, = ax.plot(x_i, x_i*50 - 4, 'r-', linewidth=2)
+
+def update(i):
+    label = 'epoch {0}'.format(i + 1)
+    line.set_ydata(x_i*m + all_b[i])
+    ax.set_xlabel(label)
+    # return line, ax
+
+anim = FuncAnimation(fig, update, repeat=True, frames=epochs, interval=500)
+
+#f = r"animation.gif" 
+#writergif = animation.PillowWriter(fps=2) 
+#anim.save(f, writer=writergif)
+
+# creating a blank window 
+# for the animation 
+fig = plt.figure(figsize=(9,5)) 
+axis = plt.axes(xlim =(0, 31), ylim =(0, 2500000)) 
+  
+line, = axis.plot([], [], lw = 2) 
+  
+xdata, ydata = [], [] 
+  
+# animation function 
+def animate(i): 
+    label = 'epoch {0}'.format(i + 1)
+    xdata.append(num_epochs[i]) 
+    ydata.append(all_cost[i]) 
+    line.set_data(xdata, ydata) 
+    axis.set_xlabel(label)
+      
+    return line, 
+  
+# calling the animation function     
+anim = animation.FuncAnimation(fig, animate, frames = 30,repeat=False, interval = 500)
+
+f = r"animation1.gif" 
+writergif = animation.PillowWriter(fps=2) 
+anim.save(f, writer=writergif)
+
+fig = plt.figure(figsize=(9,5)) 
+axis = plt.axes(xlim =(0, 31), ylim =(-150, 0)) 
+  
+line, = axis.plot([], [], lw = 2) 
+  
+xdata, ydata = [], [] 
+  
+# animation function 
+def animate(i): 
+    label = 'epoch {0}'.format(i + 1)
+    xdata.append(num_epochs[i]) 
+    ydata.append(all_b[i]) 
+    line.set_data(xdata, ydata) 
+    axis.set_xlabel(label)
+      
+    return line, 
+  
+# calling the animation function     
+anim = animation.FuncAnimation(fig, animate, frames = 30,repeat=False, interval = 500)
+
+f = r"animation2.gif" 
+writergif = animation.PillowWriter(fps=2) 
+anim.save(f, writer=writergif)
+
+import matplotlib.pyplot as plt
+import matplotlib.animation
+import numpy as np
+
+fig, ax = plt.subplots()
+ax.plot(all_b, all_cost)
+x, y = [],[]
+sc = ax.scatter(x,y,color='red',marker='+')
+plt.xlim(-150,50)
+plt.ylim(0,2500000)
+
+def animate(i):
+    label = 'epoch {0}'.format(i + 1)
+    x.append(all_b[i])
+    y.append(all_cost[i])
+    sc.set_offsets(np.c_[x,y])
+    ax.set_xlabel(label)
+
+ani = matplotlib.animation.FuncAnimation(fig, animate, 
+                frames=30, interval=500, repeat=True) 
+plt.show()
+
+f = r"animation3.gif" 
+writergif = animation.PillowWriter(fps=2) 
+ani.save(f, writer=writergif)
+
+b_input = np.linspace(-150,150,100)
+cost_input = []
+
+for i in range(len(b_input)):
+    this_cost = 0 
+    for j in range(X.shape[0]):
+        this_cost = this_cost + (y[j] - m*X[j] - b_input[i])**2
+    #cost_input.append(this_cost)
+    print(this_cost)
+        
+[5.31856924e+13]
+[5.31854779e+13]
+[5.31852633e+13]
+[5.31850488e+13]
+[5.31848342e+13]
+[5.31846197e+13]
+[5.31844052e+13]
+[5.31841906e+13]
+[5.31839761e+13]
+[5.31837616e+13]
+[5.3183547e+13]
+[5.31833325e+13]
+[5.3183118e+13]
+[5.31829035e+13]
+[5.31826889e+13]
+[5.31824744e+13]
+[5.31822599e+13]
+[5.31820454e+13]
+[5.31818309e+13]
+[5.31816163e+13]
+[5.31814018e+13]
+[5.31811873e+13]
+[5.31809728e+13]
+[5.31807583e+13]
+[5.31805438e+13]
+[5.31803293e+13]
+[5.31801148e+13]
+[5.31799003e+13]
+[5.31796858e+13]
+[5.31794713e+13]
+[5.31792568e+13]
+[5.31790423e+13]
+[5.31788278e+13]
+[5.31786133e+13]
+[5.31783988e+13]
+[5.31781844e+13]
+[5.31779699e+13]
+[5.31777554e+13]
+[5.31775409e+13]
+[5.31773264e+13]
+[5.3177112e+13]
+[5.31768975e+13]
+[5.3176683e+13]
+[5.31764685e+13]
+[5.31762541e+13]
+[5.31760396e+13]
+[5.31758251e+13]
+[5.31756107e+13]
+[5.31753962e+13]
+[5.31751818e+13]
+[5.31749673e+13]
+[5.31747528e+13]
+[5.31745384e+13]
+[5.31743239e+13]
+[5.31741095e+13]
+[5.3173895e+13]
+[5.31736806e+13]
+[5.31734662e+13]
+[5.31732517e+13]
+[5.31730373e+13]
+[5.31728228e+13]
+[5.31726084e+13]
+[5.3172394e+13]
+[5.31721795e+13]
+[5.31719651e+13]
+[5.31717507e+13]
+[5.31715362e+13]
+[5.31713218e+13]
+[5.31711074e+13]
+[5.3170893e+13]
+[5.31706785e+13]
+[5.31704641e+13]
+[5.31702497e+13]
+[5.31700353e+13]
+[5.31698209e+13]
+[5.31696065e+13]
+[5.31693921e+13]
+[5.31691777e+13]
+[5.31689632e+13]
+[5.31687488e+13]
+[5.31685344e+13]
+[5.316832e+13]
+[5.31681056e+13]
+[5.31678912e+13]
+[5.31676768e+13]
+[5.31674625e+13]
+[5.31672481e+13]
+[5.31670337e+13]
+[5.31668193e+13]
+[5.31666049e+13]
+[5.31663905e+13]
+[5.31661761e+13]
+[5.31659618e+13]
+[5.31657474e+13]
+[5.3165533e+13]
+[5.31653186e+13]
+[5.31651043e+13]
+[5.31648899e+13]
+[5.31646755e+13]
+[5.31644611e+13]
+ 
+
+
+
+
+
+         all  thing from github 
+
+
+
+ 
+
+```
