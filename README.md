@@ -1,14 +1,9 @@
 ﻿# Machine Learning Code
 
-I reorganized this repo topic wise inside [algorithm-wise-guide](algorithm-wise-guide/README.md).
-The original day-wise folders and notebooks are still here.
+I reorganized this repo topic wise inside algorithm-wise-guide.
 
-## Start here
-- Open algorithm-wise-guide/README.md
-- Pick the topic I want
-- Read the short note first, then open the Python file
-
-## Notes
-- I kept the old notebooks untouched
-- Where older examples were outdated, I kept the newer sklearn or ydata-profiling version in the topic-wise guide
+# **Start here**
+Open algorithm-wise-guide
+Pick the topic
+Read the short note first, then open the Python file
 
